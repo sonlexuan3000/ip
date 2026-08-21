@@ -9,12 +9,12 @@ public class Mira {
     private static final String LINE = "____________________________________________________________";
 
     /**
-     * Stores text as tasks and lists it on request.
+     * Stores tasks and supports listing and completion updates.
      *
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        List<String> tasks = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
         Scanner scanner = new Scanner(System.in);
         printBlock("Hello! I'm Mira\nWhat can I do for you?");
 
@@ -25,22 +25,37 @@ public class Mira {
                 return;
             } else if (input.equals("list")) {
                 showTasks(tasks);
+            } else if (input.startsWith("mark ")) {
+                setTaskDone(tasks, input.substring(5), true);
+            } else if (input.startsWith("unmark ")) {
+                setTaskDone(tasks, input.substring(7), false);
             } else {
-                tasks.add(input);
-                printBlock("Added: " + input);
+                Task task = new Task(input);
+                tasks.add(task);
+                printBlock("Added: " + task);
             }
         }
     }
 
-    private static void showTasks(List<String> tasks) {
+    private static void showTasks(List<Task> tasks) {
         StringBuilder message = new StringBuilder("Here are the tasks in your list:");
         for (int i = 0; i < tasks.size(); i++) {
             message.append(System.lineSeparator())
                     .append(i + 1)
-                    .append(". ")
+                    .append('.')
                     .append(tasks.get(i));
         }
         printBlock(message.toString());
+    }
+
+    private static void setTaskDone(List<Task> tasks, String indexText, boolean isDone) {
+        int index = Integer.parseInt(indexText) - 1;
+        Task task = tasks.get(index);
+        task.setDone(isDone);
+        String message = isDone
+                ? "Nice! I've marked this task as done:"
+                : "OK, I've marked this task as not done yet:";
+        printBlock(message + "\n  " + task);
     }
 
     private static void printBlock(String message) {
