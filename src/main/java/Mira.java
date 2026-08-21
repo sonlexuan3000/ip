@@ -80,6 +80,9 @@ public class Mira {
         case "unmark":
             setTaskDone(arguments, false);
             break;
+        case "delete":
+            deleteTask(arguments);
+            break;
         default:
             throw new MiraException("I'm sorry, but I don't know what that means :-(");
         }
@@ -145,6 +148,12 @@ public class Mira {
                 ? "Nice! I've marked this task as done:"
                 : "OK, I've marked this task as not done yet:";
         printBlock(message + "\n  " + task);
+    }
+
+    private void deleteTask(String arguments) throws MiraException {
+        Task removedTask = tasks.remove(parseTaskIndex(arguments));
+        printBlock("Noted. I've removed this task:\n  " + removedTask
+                + "\n" + getTaskCountMessage());
     }
 
     private int parseTaskIndex(String arguments) throws MiraException {
