@@ -7,9 +7,13 @@ public class Event extends Task {
 
     /**
      * Creates an incomplete event.
+     *
+     * @param description human-readable task description
+     * @param from start date or time as entered by the user
+     * @param to end date or time as entered by the user
      */
     public Event(String description, String from, String to) {
-        super(description, "E");
+        super(description, TaskType.EVENT);
         this.from = from;
         this.to = to;
     }

@@ -3,35 +3,47 @@
  */
 public class Task {
     private final String description;
-    private final String typeSymbol;
+    private final TaskType type;
     private boolean isDone;
 
     /**
-     * Creates an incomplete task of the stated type.
+     * Creates an incomplete task.
+     *
+     * @param description human-readable task description
+     * @param type kind of task being created
      */
-    public Task(String description, String typeSymbol) {
+    public Task(String description, TaskType type) {
         this.description = description;
-        this.typeSymbol = typeSymbol;
+        this.type = type;
         this.isDone = false;
     }
 
     /**
      * Updates whether this task has been completed.
+     *
+     * @param isDone new completion status
      */
     public void setDone(boolean isDone) {
         this.isDone = isDone;
     }
 
     /**
-     * Returns scheduling details supplied by a specialized task.
+     * Returns details appended after the task description.
+     * Subclasses override this when they carry scheduling information.
+     *
+     * @return formatted scheduling details, or an empty string
      */
     protected String getDetails() {
         return "";
     }
 
+    private String getStatusIcon() {
+        return isDone ? "X" : " ";
+    }
+
     @Override
     public String toString() {
-        return "[" + typeSymbol + "][" + (isDone ? "X" : " ") + "] "
+        return "[" + type.getSymbol() + "][" + getStatusIcon() + "] "
                 + description + getDetails();
     }
 }

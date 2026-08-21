@@ -6,9 +6,12 @@ public class Deadline extends Task {
 
     /**
      * Creates an incomplete deadline.
+     *
+     * @param description human-readable task description
+     * @param by due date or time as entered by the user
      */
     public Deadline(String description, String by) {
-        super(description, "D");
+        super(description, TaskType.DEADLINE);
         this.by = by;
     }
 
