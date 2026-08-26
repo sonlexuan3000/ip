@@ -29,11 +29,17 @@ public class Parser {
             "\\s+/to\\s+", Pattern.CASE_INSENSITIVE);
 
     /**
+     * Creates a parser for Mira's text command syntax.
+     */
+    public Parser() {
+    }
+
+    /**
      * Parses and validates one complete command line.
      *
-     * @param input complete user input
-     * @return the parsed command
-     * @throws MiraException if the input does not form a valid command
+     * @param input complete user input.
+     * @return the parsed command.
+     * @throws MiraException if the input does not form a valid command.
      */
     public Command parse(String input) throws MiraException {
         if (input.isBlank()) {
@@ -45,26 +51,24 @@ public class Parser {
         String arguments = commandParts.length == 2 ? commandParts[1].trim() : "";
 
         switch (type) {
-        case BYE:
-            ensureNoArguments(arguments, "bye");
-            return Command.withoutArguments(type);
-        case LIST:
-            ensureNoArguments(arguments, "list");
-            return Command.withoutArguments(type);
-        case TODO:
-            return Command.withTask(type, parseTodo(arguments));
-        case DEADLINE:
-            return Command.withTask(type, parseDeadline(arguments));
-        case EVENT:
-            return Command.withTask(type, parseEvent(arguments));
-        case MARK:
-        case UNMARK:
-        case DELETE:
-            return Command.withTaskNumber(type, parseTaskNumber(arguments));
-        case UNKNOWN:
-            throw new MiraException("I'm sorry, but I don't know what that means :-(");
-        default:
-            throw new MiraException("That command is not supported.");
+            case BYE:
+                ensureNoArguments(arguments, "bye");
+                return Command.withoutArguments(type);
+            case LIST:
+                ensureNoArguments(arguments, "list");
+                return Command.withoutArguments(type);
+            case TODO:
+                return Command.withTask(type, parseTodo(arguments));
+            case DEADLINE:
+                return Command.withTask(type, parseDeadline(arguments));
+            case EVENT:
+                return Command.withTask(type, parseEvent(arguments));
+            case MARK, UNMARK, DELETE:
+                return Command.withTaskNumber(type, parseTaskNumber(arguments));
+            case UNKNOWN:
+                throw new MiraException("I'm sorry, but I don't know what that means :-(");
+            default:
+                throw new MiraException("That command is not supported.");
         }
     }
 

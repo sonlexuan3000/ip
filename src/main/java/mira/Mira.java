@@ -23,7 +23,7 @@ public class Mira {
     /**
      * Creates a Mira session connected to standard input and local storage.
      *
-     * @throws MiraException if saved tasks cannot be loaded
+     * @throws MiraException if saved tasks cannot be loaded.
      */
     public Mira() throws MiraException {
         this.storage = new Storage(Path.of("data", "mira.txt"));
@@ -52,29 +52,28 @@ public class Mira {
 
     private boolean execute(Command command) throws MiraException {
         switch (command.getType()) {
-        case BYE:
-            ui.showGoodbye();
-            return true;
-        case LIST:
-            ui.showTasks(tasks.asList());
-            break;
-        case TODO:
-        case DEADLINE:
-        case EVENT:
-            addTask(command.getTask());
-            break;
-        case MARK:
-            setTaskDone(command.getTaskNumber(), true);
-            break;
-        case UNMARK:
-            setTaskDone(command.getTaskNumber(), false);
-            break;
-        case DELETE:
-            deleteTask(command.getTaskNumber());
-            break;
-        case UNKNOWN:
-        default:
-            throw new MiraException("That command is not supported.");
+            case BYE:
+                ui.showGoodbye();
+                return true;
+            case LIST:
+                ui.showTasks(tasks.asList());
+                break;
+            case TODO, DEADLINE, EVENT:
+                addTask(command.getTask());
+                break;
+            case MARK:
+                setTaskDone(command.getTaskNumber(), true);
+                break;
+            case UNMARK:
+                setTaskDone(command.getTaskNumber(), false);
+                break;
+            case DELETE:
+                deleteTask(command.getTaskNumber());
+                break;
+            case UNKNOWN:
+                throw new MiraException("That command is not supported.");
+            default:
+                throw new MiraException("That command is not supported.");
         }
 
         return false;
@@ -101,7 +100,7 @@ public class Mira {
     /**
      * Launches Mira.
      *
-     * @param args command-line arguments, which are not used
+     * @param args command-line arguments, which are not used.
      */
     public static void main(String[] args) {
         try {

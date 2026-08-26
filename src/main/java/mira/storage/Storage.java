@@ -28,7 +28,7 @@ public class Storage {
     /**
      * Creates storage backed by the specified file.
      *
-     * @param filePath relative or absolute path to the data file
+     * @param filePath relative or absolute path to the data file.
      */
     public Storage(Path filePath) {
         this.filePath = filePath;
@@ -37,8 +37,8 @@ public class Storage {
     /**
      * Loads all tasks from disk, creating an empty data file if needed.
      *
-     * @return tasks in their saved order
-     * @throws MiraException if the data cannot be read or decoded
+     * @return tasks in their saved order.
+     * @throws MiraException if the data cannot be read or decoded.
      */
     public TaskList load() throws MiraException {
         createDataFileIfMissing();
@@ -59,8 +59,8 @@ public class Storage {
     /**
      * Replaces the data file with the current task list.
      *
-     * @param tasks task list to persist in display order
-     * @throws MiraException if the data cannot be written
+     * @param tasks task list to persist in display order.
+     * @throws MiraException if the data cannot be written.
      */
     public void save(TaskList tasks) throws MiraException {
         try {
@@ -100,18 +100,18 @@ public class Storage {
         fields.add(encodeText(task.getDescription()));
 
         switch (task.getType()) {
-        case DEADLINE:
-            fields.add(encodeText(((Deadline) task).getBy().toString()));
-            break;
-        case EVENT:
-            Event event = (Event) task;
-            fields.add(encodeText(event.getFrom()));
-            fields.add(encodeText(event.getTo()));
-            break;
-        case TODO:
-            break;
-        default:
-            throw new IllegalArgumentException("Unsupported task type: " + task.getType());
+            case DEADLINE:
+                fields.add(encodeText(((Deadline) task).getBy().toString()));
+                break;
+            case EVENT:
+                Event event = (Event) task;
+                fields.add(encodeText(event.getFrom()));
+                fields.add(encodeText(event.getTo()));
+                break;
+            case TODO:
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported task type: " + task.getType());
         }
 
         return String.join(FIELD_SEPARATOR, fields);
@@ -126,20 +126,20 @@ public class Storage {
         Task task;
         String description = decodeText(fields[2]);
         switch (fields[0]) {
-        case "T":
-            requireFieldCount(fields, 3);
-            task = new Todo(description);
-            break;
-        case "D":
-            requireFieldCount(fields, 4);
-            task = new Deadline(description, decodeDate(fields[3]));
-            break;
-        case "E":
-            requireFieldCount(fields, 5);
-            task = new Event(description, decodeText(fields[3]), decodeText(fields[4]));
-            break;
-        default:
-            throw invalidData();
+            case "T":
+                requireFieldCount(fields, 3);
+                task = new Todo(description);
+                break;
+            case "D":
+                requireFieldCount(fields, 4);
+                task = new Deadline(description, decodeDate(fields[3]));
+                break;
+            case "E":
+                requireFieldCount(fields, 5);
+                task = new Event(description, decodeText(fields[3]), decodeText(fields[4]));
+                break;
+            default:
+                throw invalidData();
         }
 
         if ("1".equals(fields[1])) {
