@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import mira.exception.MiraException;
@@ -49,5 +52,23 @@ class TaskListTest {
         assertThrows(MiraException.class, () -> tasks.get(2));
         assertEquals(1, tasks.size());
         assertEquals("only", tasks.asList().get(0).getDescription());
+    }
+
+    @Test
+    void find_matchingDescriptions_isCaseInsensitiveAndLiteral() {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("Read Book"));
+        tasks.add(new Deadline("return library copy", LocalDate.of(2026, 8, 28)));
+        tasks.add(new Todo("symbols [.*| stay literal"));
+
+        List<Task> bookMatches = tasks.find("BOOK");
+        List<Task> symbolMatches = tasks.find("[.*|");
+
+        assertEquals(1, bookMatches.size());
+        assertEquals("Read Book", bookMatches.get(0).getDescription());
+        assertEquals(1, symbolMatches.size());
+        assertEquals("symbols [.*| stay literal", symbolMatches.get(0).getDescription());
+        assertTrue(tasks.find("Aug 28 2026").isEmpty());
+        assertEquals(3, tasks.size());
     }
 }

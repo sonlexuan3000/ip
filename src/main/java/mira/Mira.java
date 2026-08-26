@@ -65,6 +65,9 @@ public class Mira {
             case LIST:
                 ui.showTasks(tasks.asList());
                 break;
+            case FIND:
+                ui.showMatchingTasks(tasks.find(command.getKeyword()));
+                break;
             case TODO, DEADLINE, EVENT:
                 addTask(command.getTask());
                 break;

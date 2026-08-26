@@ -53,6 +53,15 @@ class ParserTest {
     }
 
     @Test
+    void parse_findCommand_preservesKeywordPhrase() throws MiraException {
+        Command command = parser.parse("find Book chapter");
+
+        assertEquals(CommandType.FIND, command.getType());
+        assertEquals("Book chapter", command.getKeyword());
+        assertThrows(MiraException.class, () -> parser.parse("find"));
+    }
+
+    @Test
     void parse_malformedTaskCommands_throwsMiraException() {
         assertThrows(MiraException.class, () -> parser.parse(""));
         assertThrows(MiraException.class, () -> parser.parse("todo"));

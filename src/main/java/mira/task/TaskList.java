@@ -2,6 +2,7 @@ package mira.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import mira.exception.MiraException;
 
@@ -88,6 +89,24 @@ public class TaskList {
      */
     public List<Task> asList() {
         return List.copyOf(tasks);
+    }
+
+    /**
+     * Finds tasks whose descriptions contain a keyword, ignoring letter case.
+     *
+     * @param keyword Text to find in task descriptions.
+     * @return Matching tasks in their original order.
+     */
+    public List<Task> find(String keyword) {
+        String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            String description = task.getDescription().toLowerCase(Locale.ROOT);
+            if (description.contains(normalizedKeyword)) {
+                matches.add(task);
+            }
+        }
+        return List.copyOf(matches);
     }
 
     /**
