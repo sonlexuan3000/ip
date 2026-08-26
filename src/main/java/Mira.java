@@ -1,4 +1,6 @@
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -119,15 +121,22 @@ public class Mira {
     }
 
     /**
-     * Parses and adds a deadline in the form {@code description /by time}.
+     * Parses and adds a deadline in the form {@code description /by yyyy-MM-dd}.
      */
     private void addDeadline(String arguments) throws MiraException {
         Matcher matcher = DEADLINE_PATTERN.matcher(arguments);
         if (!hasExactlyOneMatch(BY_DELIMITER_PATTERN, arguments) || !matcher.matches()) {
             throw new MiraException(
-                    "A deadline must follow: deadline DESCRIPTION /by DATE_OR_TIME.");
+                    "A deadline must follow: deadline DESCRIPTION /by YYYY-MM-DD.");
         }
-        addTask(new Deadline(matcher.group(1).trim(), matcher.group(2).trim()));
+
+        LocalDate by;
+        try {
+            by = LocalDate.parse(matcher.group(2).trim());
+        } catch (DateTimeParseException exception) {
+            throw new MiraException("A deadline date must use YYYY-MM-DD.");
+        }
+        addTask(new Deadline(matcher.group(1).trim(), by));
     }
 
     /**
