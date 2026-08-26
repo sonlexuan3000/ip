@@ -29,6 +29,12 @@ public class Parser {
             "\\s+/to\\s+", Pattern.CASE_INSENSITIVE);
 
     /**
+     * Creates a parser for Mira's text command syntax.
+     */
+    public Parser() {
+    }
+
+    /**
      * Parses and validates one complete command line.
      *
      * @param input complete user input
@@ -68,6 +74,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses a todo description.
+     *
+     * @param arguments Text following the todo command word.
+     * @return A todo containing the supplied description.
+     * @throws MiraException If the description is empty.
+     */
     private Task parseTodo(String arguments) throws MiraException {
         if (arguments.isBlank()) {
             throw new MiraException("The description of a todo cannot be empty.");
@@ -75,6 +88,13 @@ public class Parser {
         return new Todo(arguments);
     }
 
+    /**
+     * Parses a deadline description and strict ISO date.
+     *
+     * @param arguments Text following the deadline command word.
+     * @return A deadline containing the parsed description and date.
+     * @throws MiraException If the delimiter or date is invalid.
+     */
     private Task parseDeadline(String arguments) throws MiraException {
         Matcher matcher = DEADLINE_PATTERN.matcher(arguments);
         if (!hasExactlyOneMatch(BY_DELIMITER_PATTERN, arguments) || !matcher.matches()) {
@@ -90,6 +110,13 @@ public class Parser {
         }
     }
 
+    /**
+     * Parses an event description, start, and end value.
+     *
+     * @param arguments Text following the event command word.
+     * @return An event containing the parsed fields.
+     * @throws MiraException If either delimiter is missing or ambiguous.
+     */
     private Task parseEvent(String arguments) throws MiraException {
         Matcher matcher = EVENT_PATTERN.matcher(arguments);
         if (!hasExactlyOneMatch(FROM_DELIMITER_PATTERN, arguments)
@@ -104,6 +131,13 @@ public class Parser {
                 matcher.group(3).trim());
     }
 
+    /**
+     * Parses a single positive integer task number.
+     *
+     * @param arguments Text expected to contain the task number.
+     * @return The parsed one-based task number.
+     * @throws MiraException If the value is missing, malformed, or too large.
+     */
     private int parseTaskNumber(String arguments) throws MiraException {
         if (!arguments.matches("\\d+")) {
             throw new MiraException("Please provide a valid task number.");
@@ -116,12 +150,26 @@ public class Parser {
         }
     }
 
+    /**
+     * Rejects text supplied to a command that takes no arguments.
+     *
+     * @param arguments Text following the command word.
+     * @param command Command name used in the error message.
+     * @throws MiraException If unexpected arguments are present.
+     */
     private void ensureNoArguments(String arguments, String command) throws MiraException {
         if (!arguments.isBlank()) {
             throw new MiraException("The " + command + " command does not take extra text.");
         }
     }
 
+    /**
+     * Checks whether a delimiter occurs exactly once.
+     *
+     * @param pattern Delimiter pattern to find.
+     * @param input Input in which the delimiter is expected.
+     * @return {@code true} if there is exactly one match.
+     */
     private static boolean hasExactlyOneMatch(Pattern pattern, String input) {
         Matcher matcher = pattern.matcher(input);
         return matcher.find() && !matcher.find();

@@ -131,11 +131,22 @@ public class Ui {
                 + "\n" + getTaskCountMessage(taskCount));
     }
 
+    /**
+     * Builds a grammatically correct task-count sentence.
+     *
+     * @param taskCount Number of tasks remaining.
+     * @return Sentence describing the task count.
+     */
     private String getTaskCountMessage(int taskCount) {
         String noun = taskCount == 1 ? "task" : "tasks";
         return "Now you have " + taskCount + " " + noun + " in the list.";
     }
 
+    /**
+     * Prints a response between Mira's horizontal boundaries.
+     *
+     * @param message Response text to display.
+     */
     private void showBlock(String message) {
         output.println(LINE);
         output.println(message);

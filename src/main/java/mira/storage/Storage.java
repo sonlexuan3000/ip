@@ -79,6 +79,11 @@ public class Storage {
         }
     }
 
+    /**
+     * Creates the parent directory and an empty data file when absent.
+     *
+     * @throws MiraException If either path cannot be created.
+     */
     private void createDataFileIfMissing() throws MiraException {
         try {
             Path parent = filePath.getParent();
@@ -93,6 +98,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Encodes one task as a type, status, and Base64 text fields.
+     *
+     * @param task Task to encode.
+     * @return A single storage-file line.
+     */
     private static String encodeTask(Task task) {
         List<String> fields = new ArrayList<>();
         fields.add(task.getType().getSymbol());
@@ -117,6 +128,13 @@ public class Storage {
         return String.join(FIELD_SEPARATOR, fields);
     }
 
+    /**
+     * Decodes one storage-file line into its concrete task type.
+     *
+     * @param line Encoded storage-file line.
+     * @return The decoded task.
+     * @throws MiraException If the line has an invalid type, field count, or value.
+     */
     private static Task decodeTask(String line) throws MiraException {
         String[] fields = line.split(" \\| ", -1);
         if (fields.length < 3) {
@@ -150,10 +168,23 @@ public class Storage {
         return task;
     }
 
+    /**
+     * Encodes arbitrary UTF-8 text without exposing storage delimiters.
+     *
+     * @param text Text to encode.
+     * @return Base64 representation of the text.
+     */
     private static String encodeText(String text) {
         return Base64.getEncoder().encodeToString(text.getBytes(StandardCharsets.UTF_8));
     }
 
+    /**
+     * Decodes a Base64 text field.
+     *
+     * @param encodedText Encoded field value.
+     * @return Decoded UTF-8 text.
+     * @throws MiraException If the field is not valid Base64.
+     */
     private static String decodeText(String encodedText) throws MiraException {
         try {
             byte[] bytes = Base64.getDecoder().decode(encodedText);
@@ -163,6 +194,13 @@ public class Storage {
         }
     }
 
+    /**
+     * Decodes an ISO date stored inside a Base64 text field.
+     *
+     * @param encodedDate Encoded ISO date.
+     * @return Parsed date.
+     * @throws MiraException If the field is not a valid ISO date.
+     */
     private static LocalDate decodeDate(String encodedDate) throws MiraException {
         try {
             return LocalDate.parse(decodeText(encodedDate));
@@ -171,6 +209,13 @@ public class Storage {
         }
     }
 
+    /**
+     * Validates the exact number of fields for a task type.
+     *
+     * @param fields Fields decoded from one line.
+     * @param expectedCount Required number of fields.
+     * @throws MiraException If the field count differs.
+     */
     private static void requireFieldCount(String[] fields, int expectedCount)
             throws MiraException {
         if (fields.length != expectedCount) {
@@ -178,6 +223,11 @@ public class Storage {
         }
     }
 
+    /**
+     * Creates a consistent exception for malformed storage content.
+     *
+     * @return Exception describing invalid persisted data.
+     */
     private static MiraException invalidData() {
         return new MiraException("The data file contains an invalid task.");
     }

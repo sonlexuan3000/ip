@@ -38,6 +38,7 @@ public class Event extends Task {
         return to;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getDetails() {
         return " (from: " + from + " to: " + to + ")";
