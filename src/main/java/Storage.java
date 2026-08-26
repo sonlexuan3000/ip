@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -90,7 +92,7 @@ public class Storage {
 
         switch (task.getType()) {
         case DEADLINE:
-            fields.add(encodeText(((Deadline) task).getBy()));
+            fields.add(encodeText(((Deadline) task).getBy().toString()));
             break;
         case EVENT:
             Event event = (Event) task;
@@ -121,7 +123,7 @@ public class Storage {
             break;
         case "D":
             requireFieldCount(fields, 4);
-            task = new Deadline(description, decodeText(fields[3]));
+            task = new Deadline(description, decodeDate(fields[3]));
             break;
         case "E":
             requireFieldCount(fields, 5);
@@ -148,6 +150,14 @@ public class Storage {
             byte[] bytes = Base64.getDecoder().decode(encodedText);
             return new String(bytes, StandardCharsets.UTF_8);
         } catch (IllegalArgumentException exception) {
+            throw invalidData();
+        }
+    }
+
+    private static LocalDate decodeDate(String encodedDate) throws MiraException {
+        try {
+            return LocalDate.parse(decodeText(encodedDate));
+        } catch (DateTimeParseException exception) {
             throw invalidData();
         }
     }
