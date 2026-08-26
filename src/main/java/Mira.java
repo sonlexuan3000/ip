@@ -1,3 +1,4 @@
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -22,12 +23,16 @@ public class Mira {
 
     private final List<Task> tasks;
     private final Scanner scanner;
+    private final Storage storage;
 
     /**
      * Creates a Mira session that reads commands from standard input.
+     *
+     * @throws MiraException if saved tasks cannot be loaded
      */
-    public Mira() {
-        this.tasks = new ArrayList<>();
+    public Mira() throws MiraException {
+        this.storage = new Storage(Path.of("data", "mira.txt"));
+        this.tasks = new ArrayList<>(storage.load());
         this.scanner = new Scanner(System.in);
     }
 
@@ -146,8 +151,9 @@ public class Mira {
     /**
      * Adds a task and confirms the updated task count.
      */
-    private void addTask(Task task) {
+    private void addTask(Task task) throws MiraException {
         tasks.add(task);
+        storage.save(tasks);
         printBlock("Got it. I've added this task:\n  " + task
                 + "\n" + getTaskCountMessage());
     }
@@ -177,6 +183,7 @@ public class Mira {
     private void setTaskDone(String arguments, boolean isDone) throws MiraException {
         Task task = getTask(arguments);
         task.setDone(isDone);
+        storage.save(tasks);
 
         String message = isDone
                 ? "Nice! I've marked this task as done:"
@@ -190,6 +197,7 @@ public class Mira {
     private void deleteTask(String arguments) throws MiraException {
         int index = parseTaskIndex(arguments);
         Task removedTask = tasks.remove(index);
+        storage.save(tasks);
         printBlock("Noted. I've removed this task:\n  " + removedTask
                 + "\n" + getTaskCountMessage());
     }
@@ -262,6 +270,10 @@ public class Mira {
      * @param args command-line arguments, which are not used
      */
     public static void main(String[] args) {
-        new Mira().run();
+        try {
+            new Mira().run();
+        } catch (MiraException exception) {
+            printBlock("OOPS!!! " + exception.getMessage());
+        }
     }
 }
