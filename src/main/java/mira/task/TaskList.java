@@ -90,6 +90,13 @@ public class TaskList {
         return List.copyOf(tasks);
     }
 
+    /**
+     * Converts a valid one-based task number into a list index.
+     *
+     * @param taskNumber One-based task number shown to the user.
+     * @return Zero-based list index.
+     * @throws MiraException If the task number is outside the list.
+     */
     private int toZeroBasedIndex(int taskNumber) throws MiraException {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
             throw new MiraException("That task number is not in the list.");

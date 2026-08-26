@@ -33,6 +33,7 @@ public class Deadline extends Task {
         return by;
     }
 
+    /** {@inheritDoc} */
     @Override
     protected String getDetails() {
         return " (by: " + by.format(DISPLAY_FORMAT) + ")";

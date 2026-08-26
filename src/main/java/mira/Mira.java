@@ -50,6 +50,13 @@ public class Mira {
         }
     }
 
+    /**
+     * Executes a validated command and reports its result through the UI.
+     *
+     * @param command Command to execute.
+     * @return {@code true} if Mira should end the current session.
+     * @throws MiraException If the command cannot be completed.
+     */
     private boolean execute(Command command) throws MiraException {
         switch (command.getType()) {
         case BYE:
@@ -80,18 +87,37 @@ public class Mira {
         return false;
     }
 
+    /**
+     * Adds and persists a task before displaying confirmation.
+     *
+     * @param task Task to add.
+     * @throws MiraException If the updated task list cannot be saved.
+     */
     private void addTask(Task task) throws MiraException {
         tasks.add(task);
         storage.save(tasks);
         ui.showTaskAdded(task, tasks.size());
     }
 
+    /**
+     * Changes and persists a task's completion status.
+     *
+     * @param taskNumber One-based number of the task to update.
+     * @param isDone New completion status.
+     * @throws MiraException If the task number is invalid or the list cannot be saved.
+     */
     private void setTaskDone(int taskNumber, boolean isDone) throws MiraException {
         Task task = tasks.setDone(taskNumber, isDone);
         storage.save(tasks);
         ui.showTaskMarked(task, isDone);
     }
 
+    /**
+     * Deletes and persists the task identified by its display number.
+     *
+     * @param taskNumber One-based number of the task to delete.
+     * @throws MiraException If the task number is invalid or the list cannot be saved.
+     */
     private void deleteTask(int taskNumber) throws MiraException {
         Task removedTask = tasks.delete(taskNumber);
         storage.save(tasks);

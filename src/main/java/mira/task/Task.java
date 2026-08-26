@@ -66,10 +66,20 @@ public class Task {
         return "";
     }
 
+    /**
+     * Returns the completion marker displayed inside a task.
+     *
+     * @return {@code X} for a completed task, or a space otherwise.
+     */
     private String getStatusIcon() {
         return isDone ? "X" : " ";
     }
 
+    /**
+     * Returns the task's type, status, description, and scheduling details.
+     *
+     * @return User-facing task text.
+     */
     @Override
     public String toString() {
         return "[" + type.getSymbol() + "][" + getStatusIcon() + "] "
