@@ -1,7 +1,11 @@
+package mira.ui;
+
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.Scanner;
+
+import mira.task.Task;
 
 /**
  * Handles all text input and output for Mira.

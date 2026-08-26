@@ -1,3 +1,5 @@
+package mira.task;
+
 /**
  * Types of tasks that Mira can track and their display symbols.
  */

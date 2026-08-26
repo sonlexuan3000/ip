@@ -1,3 +1,5 @@
+package mira.task;
+
 /**
  * Base representation of a task with a description and completion status.
  */

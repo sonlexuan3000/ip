@@ -1,4 +1,15 @@
+package mira;
+
 import java.nio.file.Path;
+
+import mira.command.Command;
+import mira.command.CommandType;
+import mira.exception.MiraException;
+import mira.parser.Parser;
+import mira.storage.Storage;
+import mira.task.Task;
+import mira.task.TaskList;
+import mira.ui.Ui;
 
 /**
  * Entry point and coordinator for the Mira task-tracking chatbot.

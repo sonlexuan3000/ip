@@ -1,3 +1,5 @@
+package mira.exception;
+
 /**
  * Represents invalid user input that Mira can explain and recover from.
  */

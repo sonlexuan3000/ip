@@ -1,7 +1,17 @@
+package mira.parser;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import mira.command.Command;
+import mira.command.CommandType;
+import mira.exception.MiraException;
+import mira.task.Deadline;
+import mira.task.Event;
+import mira.task.Task;
+import mira.task.Todo;
 
 /**
  * Converts raw user input into validated commands and task objects.

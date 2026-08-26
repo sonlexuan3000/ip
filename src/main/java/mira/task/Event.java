@@ -1,3 +1,5 @@
+package mira.task;
+
 /**
  * A task that occurs between stated start and end times.
  */

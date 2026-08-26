@@ -1,3 +1,7 @@
+package mira.command;
+
+import mira.task.Task;
+
 /**
  * Represents one validated instruction for Mira to execute.
  */
