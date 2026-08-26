@@ -9,11 +9,13 @@ public class Command {
     private final CommandType type;
     private final Task task;
     private final int taskNumber;
+    private final String keyword;
 
-    private Command(CommandType type, Task task, int taskNumber) {
+    private Command(CommandType type, Task task, int taskNumber, String keyword) {
         this.type = type;
         this.task = task;
         this.taskNumber = taskNumber;
+        this.keyword = keyword;
     }
 
     /**
@@ -23,7 +25,7 @@ public class Command {
      * @return a command without a task or index
      */
     public static Command withoutArguments(CommandType type) {
-        return new Command(type, null, 0);
+        return new Command(type, null, 0, null);
     }
 
     /**
@@ -34,7 +36,7 @@ public class Command {
      * @return a command containing the task
      */
     public static Command withTask(CommandType type, Task task) {
-        return new Command(type, task, 0);
+        return new Command(type, task, 0, null);
     }
 
     /**
@@ -45,7 +47,18 @@ public class Command {
      * @return a command containing the task number
      */
     public static Command withTaskNumber(CommandType type, int taskNumber) {
-        return new Command(type, null, taskNumber);
+        return new Command(type, null, taskNumber, null);
+    }
+
+    /**
+     * Creates a command that carries a task-search keyword.
+     *
+     * @param type command type
+     * @param keyword text to find in task descriptions
+     * @return a command containing the search keyword
+     */
+    public static Command withKeyword(CommandType type, String keyword) {
+        return new Command(type, null, 0, keyword);
     }
 
     /**
@@ -73,5 +86,14 @@ public class Command {
      */
     public int getTaskNumber() {
         return taskNumber;
+    }
+
+    /**
+     * Returns the keyword carried by a find command.
+     *
+     * @return the search keyword, or {@code null} for other commands
+     */
+    public String getKeyword() {
+        return keyword;
     }
 }

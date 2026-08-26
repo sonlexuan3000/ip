@@ -97,7 +97,25 @@ public class Ui {
             return;
         }
 
-        StringBuilder message = new StringBuilder("Here are the tasks in your list:");
+        showNumberedTasks("Here are the tasks in your list:", tasks);
+    }
+
+    /**
+     * Displays tasks whose descriptions matched a find command.
+     *
+     * @param tasks matching tasks to display
+     */
+    public void showMatchingTasks(List<Task> tasks) {
+        if (tasks.isEmpty()) {
+            showBlock("No matching tasks found.");
+            return;
+        }
+
+        showNumberedTasks("Here are the matching tasks in your list:", tasks);
+    }
+
+    private void showNumberedTasks(String header, List<Task> tasks) {
+        StringBuilder message = new StringBuilder(header);
         for (int i = 0; i < tasks.size(); i++) {
             message.append(System.lineSeparator())
                     .append(i + 1)

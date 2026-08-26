@@ -61,6 +61,8 @@ public class Parser {
         case UNMARK:
         case DELETE:
             return Command.withTaskNumber(type, parseTaskNumber(arguments));
+        case FIND:
+            return Command.withKeyword(type, parseKeyword(arguments));
         case UNKNOWN:
             throw new MiraException("I'm sorry, but I don't know what that means :-(");
         default:
@@ -114,6 +116,13 @@ public class Parser {
         } catch (NumberFormatException exception) {
             throw new MiraException("That task number is too large.");
         }
+    }
+
+    private String parseKeyword(String arguments) throws MiraException {
+        if (arguments.isBlank()) {
+            throw new MiraException("Please provide a keyword to find.");
+        }
+        return arguments;
     }
 
     private void ensureNoArguments(String arguments, String command) throws MiraException {
