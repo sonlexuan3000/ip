@@ -19,8 +19,8 @@ public class Command {
     /**
      * Creates a command that needs no additional value.
      *
-     * @param type command type
-     * @return a command without a task or index
+     * @param type command type.
+     * @return a command without a task or index.
      */
     public static Command withoutArguments(CommandType type) {
         return new Command(type, null, 0);
@@ -29,9 +29,9 @@ public class Command {
     /**
      * Creates a command that carries a newly parsed task.
      *
-     * @param type command type
-     * @param task task to add
-     * @return a command containing the task
+     * @param type command type.
+     * @param task task to add.
+     * @return a command containing the task.
      */
     public static Command withTask(CommandType type, Task task) {
         return new Command(type, task, 0);
@@ -40,9 +40,9 @@ public class Command {
     /**
      * Creates a command that targets a displayed task number.
      *
-     * @param type command type
-     * @param taskNumber one-based task number
-     * @return a command containing the task number
+     * @param type command type.
+     * @param taskNumber one-based task number.
+     * @return a command containing the task number.
      */
     public static Command withTaskNumber(CommandType type, int taskNumber) {
         return new Command(type, null, taskNumber);
@@ -51,7 +51,7 @@ public class Command {
     /**
      * Returns the command type.
      *
-     * @return the command type
+     * @return the command type.
      */
     public CommandType getType() {
         return type;
@@ -60,7 +60,7 @@ public class Command {
     /**
      * Returns the task carried by an add command.
      *
-     * @return the parsed task, or {@code null} for other commands
+     * @return the parsed task, or {@code null} for other commands.
      */
     public Task getTask() {
         return task;
@@ -69,7 +69,7 @@ public class Command {
     /**
      * Returns the one-based number carried by a task-targeting command.
      *
-     * @return the task number, or zero for other commands
+     * @return the task number, or zero for other commands.
      */
     public int getTaskNumber() {
         return taskNumber;

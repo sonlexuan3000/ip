@@ -21,7 +21,7 @@ public class TaskList {
     /**
      * Creates a task list containing the supplied tasks in order.
      *
-     * @param tasks initial tasks
+     * @param tasks initial tasks.
      */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
@@ -30,7 +30,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -39,9 +39,9 @@ public class TaskList {
     /**
      * Returns a task using the one-based number shown to the user.
      *
-     * @param taskNumber one-based display number
-     * @return the requested task
-     * @throws MiraException if the number is outside the list
+     * @param taskNumber one-based display number.
+     * @return the requested task.
+     * @throws MiraException if the number is outside the list.
      */
     public Task get(int taskNumber) throws MiraException {
         return tasks.get(toZeroBasedIndex(taskNumber));
@@ -50,10 +50,10 @@ public class TaskList {
     /**
      * Updates and returns a task using its one-based display number.
      *
-     * @param taskNumber one-based display number
-     * @param isDone new completion status
-     * @return the updated task
-     * @throws MiraException if the number is outside the list
+     * @param taskNumber one-based display number.
+     * @param isDone new completion status.
+     * @return the updated task.
+     * @throws MiraException if the number is outside the list.
      */
     public Task setDone(int taskNumber, boolean isDone) throws MiraException {
         Task task = get(taskNumber);
@@ -64,9 +64,9 @@ public class TaskList {
     /**
      * Deletes and returns a task using its one-based display number.
      *
-     * @param taskNumber one-based display number
-     * @return the deleted task
-     * @throws MiraException if the number is outside the list
+     * @param taskNumber one-based display number.
+     * @return the deleted task.
+     * @throws MiraException if the number is outside the list.
      */
     public Task delete(int taskNumber) throws MiraException {
         return tasks.remove(toZeroBasedIndex(taskNumber));
@@ -75,7 +75,7 @@ public class TaskList {
     /**
      * Returns the number of stored tasks.
      *
-     * @return task count
+     * @return task count.
      */
     public int size() {
         return tasks.size();
@@ -84,7 +84,7 @@ public class TaskList {
     /**
      * Returns an immutable snapshot of the current tasks.
      *
-     * @return tasks in display order
+     * @return tasks in display order.
      */
     public List<Task> asList() {
         return List.copyOf(tasks);

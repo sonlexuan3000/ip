@@ -20,7 +20,7 @@ public enum TaskType {
     /**
      * Returns the one-letter symbol displayed beside a task.
      *
-     * @return the display symbol for this task type
+     * @return the display symbol for this task type.
      */
     public String getSymbol() {
         return symbol;

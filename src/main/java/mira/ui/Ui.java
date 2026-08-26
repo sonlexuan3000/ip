@@ -26,8 +26,8 @@ public class Ui {
     /**
      * Creates a UI connected to the supplied streams.
      *
-     * @param input stream from which commands are read
-     * @param output stream to which responses are written
+     * @param input stream from which commands are read.
+     * @param output stream to which responses are written.
      */
     public Ui(InputStream input, PrintStream output) {
         this.scanner = new Scanner(input);
@@ -37,7 +37,7 @@ public class Ui {
     /**
      * Returns whether another command is available.
      *
-     * @return {@code true} if another input line can be read
+     * @return {@code true} if another input line can be read.
      */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
@@ -46,7 +46,7 @@ public class Ui {
     /**
      * Reads and trims the next command line.
      *
-     * @return the next user command
+     * @return the next user command.
      */
     public String readCommand() {
         return scanner.nextLine().trim();
@@ -69,7 +69,7 @@ public class Ui {
     /**
      * Displays a recoverable command or storage error.
      *
-     * @param message user-facing explanation of the problem
+     * @param message user-facing explanation of the problem.
      */
     public void showError(String message) {
         showBlock("OOPS!!! " + message);
@@ -78,8 +78,8 @@ public class Ui {
     /**
      * Displays confirmation after a task is added.
      *
-     * @param task task that was added
-     * @param taskCount resulting number of tasks
+     * @param task task that was added.
+     * @param taskCount resulting number of tasks.
      */
     public void showTaskAdded(Task task, int taskCount) {
         showBlock("Got it. I've added this task:\n  " + task
@@ -89,7 +89,7 @@ public class Ui {
     /**
      * Displays every task in its current order.
      *
-     * @param tasks tasks to display
+     * @param tasks tasks to display.
      */
     public void showTasks(List<Task> tasks) {
         if (tasks.isEmpty()) {
@@ -110,8 +110,8 @@ public class Ui {
     /**
      * Displays confirmation after a task's completion status changes.
      *
-     * @param task task whose status changed
-     * @param isDone new completion status
+     * @param task task whose status changed.
+     * @param isDone new completion status.
      */
     public void showTaskMarked(Task task, boolean isDone) {
         String message = isDone
@@ -123,8 +123,8 @@ public class Ui {
     /**
      * Displays confirmation after a task is deleted.
      *
-     * @param task task that was deleted
-     * @param taskCount resulting number of tasks
+     * @param task task that was deleted.
+     * @param taskCount resulting number of tasks.
      */
     public void showTaskDeleted(Task task, int taskCount) {
         showBlock("Noted. I've removed this task:\n  " + task

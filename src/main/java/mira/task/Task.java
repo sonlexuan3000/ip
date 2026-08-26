@@ -11,8 +11,8 @@ public class Task {
     /**
      * Creates an incomplete task.
      *
-     * @param description human-readable task description
-     * @param type kind of task being created
+     * @param description human-readable task description.
+     * @param type kind of task being created.
      */
     public Task(String description, TaskType type) {
         this.description = description;
@@ -23,7 +23,7 @@ public class Task {
     /**
      * Returns the task description exactly as stored.
      *
-     * @return the task description
+     * @return the task description.
      */
     public String getDescription() {
         return description;
@@ -32,7 +32,7 @@ public class Task {
     /**
      * Returns the kind of this task.
      *
-     * @return the task type
+     * @return the task type.
      */
     public TaskType getType() {
         return type;
@@ -41,7 +41,7 @@ public class Task {
     /**
      * Returns whether this task has been completed.
      *
-     * @return {@code true} if the task is done
+     * @return {@code true} if the task is done.
      */
     public boolean isDone() {
         return isDone;
@@ -50,7 +50,7 @@ public class Task {
     /**
      * Updates whether this task has been completed.
      *
-     * @param isDone new completion status
+     * @param isDone new completion status.
      */
     public void setDone(boolean isDone) {
         this.isDone = isDone;
@@ -60,7 +60,7 @@ public class Task {
      * Returns details appended after the task description.
      * Subclasses override this when they carry scheduling information.
      *
-     * @return formatted scheduling details, or an empty string
+     * @return formatted scheduling details, or an empty string.
      */
     protected String getDetails() {
         return "";
