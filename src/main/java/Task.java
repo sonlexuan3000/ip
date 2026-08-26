@@ -19,6 +19,33 @@ public class Task {
     }
 
     /**
+     * Returns the task description exactly as stored.
+     *
+     * @return the task description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Returns the kind of this task.
+     *
+     * @return the task type
+     */
+    public TaskType getType() {
+        return type;
+    }
+
+    /**
+     * Returns whether this task has been completed.
+     *
+     * @return {@code true} if the task is done
+     */
+    public boolean isDone() {
+        return isDone;
+    }
+
+    /**
      * Updates whether this task has been completed.
      *
      * @param isDone new completion status

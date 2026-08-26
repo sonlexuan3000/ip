@@ -15,6 +15,15 @@ public class Deadline extends Task {
         this.by = by;
     }
 
+    /**
+     * Returns the deadline text exactly as entered by the user.
+     *
+     * @return the due date or time text
+     */
+    public String getBy() {
+        return by;
+    }
+
     @Override
     protected String getDetails() {
         return " (by: " + by + ")";

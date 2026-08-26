@@ -18,6 +18,24 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /**
+     * Returns the event's start text exactly as entered by the user.
+     *
+     * @return the start date or time text
+     */
+    public String getFrom() {
+        return from;
+    }
+
+    /**
+     * Returns the event's end text exactly as entered by the user.
+     *
+     * @return the end date or time text
+     */
+    public String getTo() {
+        return to;
+    }
+
     @Override
     protected String getDetails() {
         return " (from: " + from + " to: " + to + ")";
