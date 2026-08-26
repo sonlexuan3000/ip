@@ -23,3 +23,35 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Running with Gradle
+
+Run Mira directly from the project folder:
+
+```shell
+./gradlew run
+```
+
+Run the automated tests:
+
+```shell
+./gradlew test
+```
+
+## Creating an executable JAR
+
+Build the standalone application:
+
+```shell
+./gradlew clean shadowJar
+```
+
+The executable is created at `build/libs/mira.jar`. Copy that file into any
+folder and launch it from that folder with:
+
+```shell
+java -jar mira.jar
+```
+
+Mira stores its tasks in `data/mira.txt`, relative to the folder from which the
+JAR is launched.
