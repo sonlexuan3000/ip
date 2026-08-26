@@ -31,7 +31,7 @@ public class Storage {
      * @return tasks in their saved order
      * @throws MiraException if the data cannot be read or decoded
      */
-    public List<Task> load() throws MiraException {
+    public TaskList load() throws MiraException {
         createDataFileIfMissing();
 
         try {
@@ -41,7 +41,7 @@ public class Storage {
                     tasks.add(decodeTask(line));
                 }
             }
-            return tasks;
+            return new TaskList(tasks);
         } catch (IOException exception) {
             throw new MiraException("I couldn't read the data file.");
         }
@@ -50,10 +50,10 @@ public class Storage {
     /**
      * Replaces the data file with the current task list.
      *
-     * @param tasks tasks to persist in display order
+     * @param tasks task list to persist in display order
      * @throws MiraException if the data cannot be written
      */
-    public void save(List<Task> tasks) throws MiraException {
+    public void save(TaskList tasks) throws MiraException {
         try {
             Path parent = filePath.getParent();
             if (parent != null) {
@@ -61,7 +61,7 @@ public class Storage {
             }
 
             List<String> lines = new ArrayList<>();
-            for (Task task : tasks) {
+            for (Task task : tasks.asList()) {
                 lines.add(encodeTask(task));
             }
             Files.write(filePath, lines, StandardCharsets.UTF_8);

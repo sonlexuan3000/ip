@@ -1,9 +1,6 @@
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +8,6 @@ import java.util.regex.Pattern;
  * Entry point and command loop for the Mira task-tracking chatbot.
  */
 public class Mira {
-    private static final String LINE = "____________________________________________________________";
     private static final Pattern DEADLINE_PATTERN = Pattern.compile(
             "^(.+?)\\s+/by\\s+(.+)$", Pattern.CASE_INSENSITIVE);
     private static final Pattern EVENT_PATTERN = Pattern.compile(
@@ -23,19 +19,19 @@ public class Mira {
     private static final Pattern TO_DELIMITER_PATTERN = Pattern.compile(
             "\\s+/to\\s+", Pattern.CASE_INSENSITIVE);
 
-    private final List<Task> tasks;
-    private final Scanner scanner;
     private final Storage storage;
+    private final TaskList tasks;
+    private final Ui ui;
 
     /**
-     * Creates a Mira session that reads commands from standard input.
+     * Creates a Mira session connected to standard input and local storage.
      *
      * @throws MiraException if saved tasks cannot be loaded
      */
     public Mira() throws MiraException {
         this.storage = new Storage(Path.of("data", "mira.txt"));
-        this.tasks = new ArrayList<>(storage.load());
-        this.scanner = new Scanner(System.in);
+        this.tasks = storage.load();
+        this.ui = new Ui();
     }
 
     /**
@@ -43,28 +39,21 @@ public class Mira {
      * or the input stream ends.
      */
     public void run() {
-        printBlock("Hello! I'm Mira\nWhat can I do for you?");
+        ui.showWelcome();
 
-        while (scanner.hasNextLine()) {
-            String input = scanner.nextLine().trim();
+        while (ui.hasNextCommand()) {
+            String input = ui.readCommand();
 
             try {
                 if (execute(input)) {
                     return;
                 }
             } catch (MiraException exception) {
-                printBlock("OOPS!!! " + exception.getMessage());
+                ui.showError(exception.getMessage());
             }
         }
     }
 
-    /**
-     * Executes one user command.
-     *
-     * @param input complete command entered by the user
-     * @return {@code true} when the application should exit
-     * @throws MiraException if the command is invalid
-     */
     private boolean execute(String input) throws MiraException {
         if (input.isBlank()) {
             throw new MiraException("Please enter a command.");
@@ -77,11 +66,11 @@ public class Mira {
         switch (commandType) {
         case BYE:
             ensureNoArguments(arguments, "bye");
-            printBlock("Bye. Hope to see you again soon!");
+            ui.showGoodbye();
             return true;
         case LIST:
             ensureNoArguments(arguments, "list");
-            showTasks();
+            ui.showTasks(tasks.asList());
             break;
         case TODO:
             addTodo(arguments);
@@ -110,9 +99,6 @@ public class Mira {
         return false;
     }
 
-    /**
-     * Adds a todo task after validating that its description is present.
-     */
     private void addTodo(String arguments) throws MiraException {
         if (arguments.isBlank()) {
             throw new MiraException("The description of a todo cannot be empty.");
@@ -120,9 +106,6 @@ public class Mira {
         addTask(new Todo(arguments));
     }
 
-    /**
-     * Parses and adds a deadline in the form {@code description /by yyyy-MM-dd}.
-     */
     private void addDeadline(String arguments) throws MiraException {
         Matcher matcher = DEADLINE_PATTERN.matcher(arguments);
         if (!hasExactlyOneMatch(BY_DELIMITER_PATTERN, arguments) || !matcher.matches()) {
@@ -139,10 +122,6 @@ public class Mira {
         addTask(new Deadline(matcher.group(1).trim(), by));
     }
 
-    /**
-     * Parses and adds an event in the form
-     * {@code description /from start /to end}.
-     */
     private void addEvent(String arguments) throws MiraException {
         Matcher matcher = EVENT_PATTERN.matcher(arguments);
         if (!hasExactlyOneMatch(FROM_DELIMITER_PATTERN, arguments)
@@ -157,120 +136,47 @@ public class Mira {
                 matcher.group(3).trim()));
     }
 
-    /**
-     * Adds a task and confirms the updated task count.
-     */
     private void addTask(Task task) throws MiraException {
         tasks.add(task);
         storage.save(tasks);
-        printBlock("Got it. I've added this task:\n  " + task
-                + "\n" + getTaskCountMessage());
+        ui.showTaskAdded(task, tasks.size());
     }
 
-    /**
-     * Displays all current tasks in their user-facing order.
-     */
-    private void showTasks() {
-        if (tasks.isEmpty()) {
-            printBlock("Your task list is empty.");
-            return;
-        }
-
-        StringBuilder message = new StringBuilder("Here are the tasks in your list:");
-        for (int i = 0; i < tasks.size(); i++) {
-            message.append(System.lineSeparator())
-                    .append(i + 1)
-                    .append('.')
-                    .append(tasks.get(i));
-        }
-        printBlock(message.toString());
-    }
-
-    /**
-     * Marks or unmarks the task identified by a one-based user index.
-     */
     private void setTaskDone(String arguments, boolean isDone) throws MiraException {
-        Task task = getTask(arguments);
-        task.setDone(isDone);
+        int taskNumber = parseTaskNumber(arguments);
+        Task task = tasks.setDone(taskNumber, isDone);
         storage.save(tasks);
-
-        String message = isDone
-                ? "Nice! I've marked this task as done:"
-                : "OK, I've marked this task as not done yet:";
-        printBlock(message + "\n  " + task);
+        ui.showTaskMarked(task, isDone);
     }
 
-    /**
-     * Deletes the task identified by a one-based user index.
-     */
     private void deleteTask(String arguments) throws MiraException {
-        int index = parseTaskIndex(arguments);
-        Task removedTask = tasks.remove(index);
+        int taskNumber = parseTaskNumber(arguments);
+        Task removedTask = tasks.delete(taskNumber);
         storage.save(tasks);
-        printBlock("Noted. I've removed this task:\n  " + removedTask
-                + "\n" + getTaskCountMessage());
+        ui.showTaskDeleted(removedTask, tasks.size());
     }
 
-    /**
-     * Returns the task identified by a one-based user index.
-     */
-    private Task getTask(String arguments) throws MiraException {
-        return tasks.get(parseTaskIndex(arguments));
-    }
-
-    /**
-     * Validates and converts a one-based user index to a zero-based list index.
-     */
-    private int parseTaskIndex(String arguments) throws MiraException {
+    private int parseTaskNumber(String arguments) throws MiraException {
         if (!arguments.matches("\\d+")) {
             throw new MiraException("Please provide a valid task number.");
         }
 
-        int userIndex;
         try {
-            userIndex = Integer.parseInt(arguments);
+            return Integer.parseInt(arguments);
         } catch (NumberFormatException exception) {
             throw new MiraException("That task number is too large.");
         }
-
-        if (userIndex < 1 || userIndex > tasks.size()) {
-            throw new MiraException("That task number is not in the list.");
-        }
-        return userIndex - 1;
     }
 
-    /**
-     * Rejects unexpected text after a command that accepts no arguments.
-     */
     private void ensureNoArguments(String arguments, String command) throws MiraException {
         if (!arguments.isBlank()) {
             throw new MiraException("The " + command + " command does not take extra text.");
         }
     }
 
-    /**
-     * Describes the current task count using the correct singular or plural noun.
-     */
-    private String getTaskCountMessage() {
-        String noun = tasks.size() == 1 ? "task" : "tasks";
-        return "Now you have " + tasks.size() + " " + noun + " in the list.";
-    }
-
-    /**
-     * Checks that a command contains one unambiguous occurrence of a delimiter.
-     */
     private static boolean hasExactlyOneMatch(Pattern pattern, String input) {
         Matcher matcher = pattern.matcher(input);
         return matcher.find() && !matcher.find();
-    }
-
-    /**
-     * Prints a response inside the chatbot's text boundary.
-     */
-    private static void printBlock(String message) {
-        System.out.println(LINE);
-        System.out.println(message);
-        System.out.println(LINE);
     }
 
     /**
@@ -282,7 +188,7 @@ public class Mira {
         try {
             new Mira().run();
         } catch (MiraException exception) {
-            printBlock("OOPS!!! " + exception.getMessage());
+            new Ui().showError(exception.getMessage());
         }
     }
 }
