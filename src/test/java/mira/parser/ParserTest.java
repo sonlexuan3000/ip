@@ -48,8 +48,7 @@ class ParserTest {
         assertThrows(MiraException.class, () -> parser.parse("mark"));
         assertThrows(MiraException.class, () -> parser.parse("mark one"));
         assertThrows(MiraException.class, () -> parser.parse("mark 1 extra"));
-        assertThrows(MiraException.class,
-                () -> parser.parse("mark 999999999999999999999999"));
+        assertThrows(MiraException.class, () -> parser.parse("mark 999999999999999999999999"));
     }
 
     @Test
@@ -65,12 +64,9 @@ class ParserTest {
     void parse_malformedTaskCommands_throwsMiraException() {
         assertThrows(MiraException.class, () -> parser.parse(""));
         assertThrows(MiraException.class, () -> parser.parse("todo"));
-        assertThrows(MiraException.class,
-                () -> parser.parse("deadline impossible /by 2023-02-29"));
-        assertThrows(MiraException.class,
-                () -> parser.parse("deadline x /by 2026-08-28 /by 2026-08-29"));
-        assertThrows(MiraException.class,
-                () -> parser.parse("event x /from a /to b /to c"));
+        assertThrows(MiraException.class, () -> parser.parse("deadline impossible /by 2023-02-29"));
+        assertThrows(MiraException.class, () -> parser.parse("deadline x /by 2026-08-28 /by 2026-08-29"));
+        assertThrows(MiraException.class, () -> parser.parse("event x /from a /to b /to c"));
         assertThrows(MiraException.class, () -> parser.parse("unknown command"));
         assertThrows(MiraException.class, () -> parser.parse("list extra"));
     }
