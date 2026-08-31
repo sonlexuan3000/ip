@@ -3,7 +3,6 @@ package mira;
 import java.nio.file.Path;
 
 import mira.command.Command;
-import mira.command.CommandType;
 import mira.exception.MiraException;
 import mira.parser.Parser;
 import mira.storage.Storage;
