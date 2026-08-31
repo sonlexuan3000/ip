@@ -105,26 +105,34 @@ public class Storage {
      * @return A single storage-file line.
      */
     private static String encodeTask(Task task) {
+        switch (task.getType()) {
+            case DEADLINE:
+                return encodeFields(
+                        task, encodeText(((Deadline) task).getBy().toString()));
+            case EVENT:
+                Event event = (Event) task;
+                return encodeFields(
+                        task, encodeText(event.getFrom()), encodeText(event.getTo()));
+            case TODO:
+                return encodeFields(task);
+            default:
+                throw new IllegalArgumentException("Unsupported task type: " + task.getType());
+        }
+    }
+
+    /**
+     * Encodes the fields common to every task followed by any type-specific fields.
+     *
+     * @param task Task whose common fields should be encoded.
+     * @param typeSpecificFields Zero or more fields carried by the concrete task type.
+     * @return A single storage-file line containing every encoded field.
+     */
+    private static String encodeFields(Task task, String... typeSpecificFields) {
         List<String> fields = new ArrayList<>();
         fields.add(task.getType().getSymbol());
         fields.add(task.isDone() ? "1" : "0");
         fields.add(encodeText(task.getDescription()));
-
-        switch (task.getType()) {
-            case DEADLINE:
-                fields.add(encodeText(((Deadline) task).getBy().toString()));
-                break;
-            case EVENT:
-                Event event = (Event) task;
-                fields.add(encodeText(event.getFrom()));
-                fields.add(encodeText(event.getTo()));
-                break;
-            case TODO:
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported task type: " + task.getType());
-        }
-
+        fields.addAll(List.of(typeSpecificFields));
         return String.join(FIELD_SEPARATOR, fields);
     }
 
