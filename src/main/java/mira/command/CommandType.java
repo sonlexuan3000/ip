@@ -27,6 +27,8 @@ public enum CommandType {
     /** Represents an unrecognized command word. */
     UNKNOWN;
 
+    private static final String TODO_ALIAS = "T";
+
     /**
      * Maps the first word of user input to a command type.
      *
@@ -34,8 +36,13 @@ public enum CommandType {
      * @return the corresponding command type, or {@link #UNKNOWN}.
      */
     public static CommandType fromWord(String word) {
+        String normalizedWord = word.toUpperCase(Locale.ROOT);
+        if (TODO_ALIAS.equals(normalizedWord)) {
+            return TODO;
+        }
+
         try {
-            return valueOf(word.toUpperCase(Locale.ROOT));
+            return valueOf(normalizedWord);
         } catch (IllegalArgumentException exception) {
             return UNKNOWN;
         }
