@@ -25,6 +25,8 @@ public class Command {
      * @return a command without a task or index.
      */
     public static Command withoutArguments(CommandType type) {
+        assert type == CommandType.BYE || type == CommandType.LIST
+                : "Only bye and list commands take no arguments";
         return new Command(type, null, 0, null);
     }
 
@@ -36,6 +38,11 @@ public class Command {
      * @return a command containing the task.
      */
     public static Command withTask(CommandType type, Task task) {
+        assert type == CommandType.TODO
+                || type == CommandType.DEADLINE
+                || type == CommandType.EVENT
+                : "Only an add command can carry a task";
+        assert task != null : "An add command must carry a task";
         return new Command(type, task, 0, null);
     }
 
@@ -47,6 +54,11 @@ public class Command {
      * @return a command containing the task number.
      */
     public static Command withTaskNumber(CommandType type, int taskNumber) {
+        assert type == CommandType.MARK
+                || type == CommandType.UNMARK
+                || type == CommandType.DELETE
+                : "Only a task-targeting command can carry a task number";
+        assert taskNumber > 0 : "A task number must be positive";
         return new Command(type, null, taskNumber, null);
     }
 
@@ -58,6 +70,8 @@ public class Command {
      * @return a command containing the search keyword.
      */
     public static Command withKeyword(CommandType type, String keyword) {
+        assert type == CommandType.FIND : "Only a find command can carry a keyword";
+        assert keyword != null && !keyword.isBlank() : "A find keyword must not be blank";
         return new Command(type, null, 0, keyword);
     }
 
