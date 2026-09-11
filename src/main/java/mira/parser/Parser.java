@@ -144,7 +144,11 @@ public class Parser {
         }
 
         try {
-            return Integer.parseInt(arguments);
+            int taskNumber = Integer.parseInt(arguments);
+            if (taskNumber < 1) {
+                throw new MiraException("Please provide a valid task number.");
+            }
+            return taskNumber;
         } catch (NumberFormatException exception) {
             throw new MiraException("That task number is too large.");
         }
