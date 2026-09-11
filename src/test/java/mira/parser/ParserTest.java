@@ -55,6 +55,7 @@ class ParserTest {
         assertEquals(1, parser.parse("delete 1").getTaskNumber());
 
         assertThrows(MiraException.class, () -> parser.parse("mark"));
+        assertThrows(MiraException.class, () -> parser.parse("mark 0"));
         assertThrows(MiraException.class, () -> parser.parse("mark one"));
         assertThrows(MiraException.class, () -> parser.parse("mark 1 extra"));
         assertThrows(MiraException.class, () -> parser.parse("mark 999999999999999999999999"));
