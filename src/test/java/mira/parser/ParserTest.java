@@ -40,12 +40,22 @@ class ParserTest {
     }
 
     @Test
+    void parse_todoAlias_createsTodoTask() throws MiraException {
+        Command command = parser.parse("t read a book");
+
+        assertEquals(CommandType.TODO, command.getType());
+        Todo todo = assertInstanceOf(Todo.class, command.getTask());
+        assertEquals("read a book", todo.getDescription());
+    }
+
+    @Test
     void parse_taskNumberCommands_acceptsOnlyOnePositiveInteger() throws MiraException {
         assertEquals(12, parser.parse("mark 12").getTaskNumber());
         assertEquals(3, parser.parse("unmark 3").getTaskNumber());
         assertEquals(1, parser.parse("delete 1").getTaskNumber());
 
         assertThrows(MiraException.class, () -> parser.parse("mark"));
+        assertThrows(MiraException.class, () -> parser.parse("mark 0"));
         assertThrows(MiraException.class, () -> parser.parse("mark one"));
         assertThrows(MiraException.class, () -> parser.parse("mark 1 extra"));
         assertThrows(MiraException.class, () -> parser.parse("mark 999999999999999999999999"));

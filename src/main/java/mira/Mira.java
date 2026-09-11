@@ -101,15 +101,9 @@ public class Mira {
             case BYE:
                 return GOODBYE_MESSAGE;
             case LIST:
-                return getTaskListMessage(
-                        "Here are the tasks in your list:",
-                        "Your task list is empty.",
-                        tasks.asList());
+                return listTasks();
             case FIND:
-                return getTaskListMessage(
-                        "Here are the matching tasks in your list:",
-                        "No matching tasks found.",
-                        tasks.find(command.getKeyword()));
+                return findTasks(command.getKeyword());
             case TODO, DEADLINE, EVENT:
                 return addTask(command.getTask());
             case MARK:
@@ -123,6 +117,31 @@ public class Mira {
             default:
                 throw new MiraException("That command is not supported.");
         }
+    }
+
+    /**
+     * Builds the response for listing every stored task.
+     *
+     * @return The complete task list or its empty-state message.
+     */
+    private String listTasks() {
+        return getTaskListMessage(
+                "Here are the tasks in your list:",
+                "Your task list is empty.",
+                tasks.asList());
+    }
+
+    /**
+     * Finds tasks matching a keyword and builds the response.
+     *
+     * @param keyword Text to find in task descriptions.
+     * @return Matching tasks or the no-match message.
+     */
+    private String findTasks(String keyword) {
+        return getTaskListMessage(
+                "Here are the matching tasks in your list:",
+                "No matching tasks found.",
+                tasks.find(keyword));
     }
 
     /**

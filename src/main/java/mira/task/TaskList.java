@@ -99,14 +99,11 @@ public class TaskList {
      */
     public List<Task> find(String keyword) {
         String normalizedKeyword = keyword.toLowerCase(Locale.ROOT);
-        List<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            String description = task.getDescription().toLowerCase(Locale.ROOT);
-            if (description.contains(normalizedKeyword)) {
-                matches.add(task);
-            }
-        }
-        return List.copyOf(matches);
+        return tasks.stream()
+                .filter(task -> task.getDescription()
+                        .toLowerCase(Locale.ROOT)
+                        .contains(normalizedKeyword))
+                .toList();
     }
 
     /**
