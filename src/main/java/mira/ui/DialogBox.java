@@ -3,6 +3,7 @@ package mira.ui;
 import java.io.IOException;
 import java.util.Collections;
 
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 /**
  * Displays one user or Mira message with a compact speaker avatar.
@@ -26,6 +28,9 @@ public class DialogBox extends HBox {
 
     @FXML
     private Label avatarText;
+
+    @FXML
+    private VBox bubble;
 
     /**
      * Loads the reusable dialog layout and fills in its message details.
@@ -45,6 +50,7 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
+        bubble.maxWidthProperty().bind(Bindings.max(120, widthProperty().subtract(90)));
         if (isUser) {
             speaker.setText("You");
             avatarText.setText("YOU");
@@ -53,6 +59,10 @@ public class DialogBox extends HBox {
             speaker.setText("Mira");
             avatarText.setText("M");
             getStyleClass().add("mira-dialog");
+            if (text.startsWith("OOPS!!!")) {
+                speaker.setText("Mira - please check");
+                getStyleClass().add("error-dialog");
+            }
             flip();
         }
     }

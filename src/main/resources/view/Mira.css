@@ -113,6 +113,25 @@
     -fx-text-fill: #21765b;
 }
 
+.error-dialog .bubble {
+    -fx-background-color: #fff1f0;
+    -fx-border-color: #cb5959;
+}
+
+.error-dialog .speaker,
+.error-dialog .message {
+    -fx-text-fill: #8c2727;
+}
+
+.error-dialog .avatar {
+    -fx-background-color: #ffe5e2;
+    -fx-border-color: #cb5959;
+}
+
+.error-dialog .avatar-text {
+    -fx-text-fill: #8c2727;
+}
+
 .composer {
     -fx-background-color: #ffffff;
     -fx-border-color: #e0ddec transparent transparent transparent;
