@@ -4,6 +4,9 @@ Mira is a desktop chatbot that keeps track of todos, deadlines, and events throu
 a JavaFX chat interface.
 Given below are instructions on how to run it.
 
+- [User guide](https://sonlexuan3000.github.io/ip/)
+- [Download Mira](https://github.com/sonlexuan3000/ip/releases/latest)
+
 ## Setting up in Intellij
 
 Prerequisites: JDK 25, update Intellij to the most recent version.
