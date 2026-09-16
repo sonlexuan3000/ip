@@ -90,4 +90,34 @@ class MiraTest {
         assertTrue(mira.getResponse("mark 1").contains("[T][X] original"));
         assertEquals(mira.getResponse("list"), new Mira(dataFile).getResponse("list"));
     }
+
+    @Test
+    void restart_afterEveryMutation_preservesAllTaskTypesAndCompletion() throws MiraException {
+        Path dataFile = tempDirectory.resolve("mira.txt");
+        Mira mira = new Mira(dataFile);
+        for (String command : new String[]{"todo đọc sách | chương 1", "deadline report /by 2028-02-29",
+            "event meeting /from Mon 9am /to Mon 10am", "mark 2", "mark 1", "unmark 1", "delete 3"}) {
+            assertTrue(!mira.getResponse(command).startsWith("OOPS!!!"), command);
+            String expected = mira.getResponse("list");
+            mira = new Mira(dataFile);
+            assertEquals(expected, mira.getResponse("list"), command);
+        }
+        assertTrue(mira.getResponse("list").contains("[T][ ] đọc sách | chương 1"));
+        assertTrue(mira.getResponse("list").contains("[D][X] report"));
+    }
+
+    @Test
+    void invalidCommands_leavePersistedTasksUnchanged() throws MiraException, IOException {
+        Path dataFile = tempDirectory.resolve("mira.txt");
+        Mira mira = new Mira(dataFile);
+        mira.getResponse("todo keep me");
+        String savedData = Files.readString(dataFile);
+        String taskList = mira.getResponse("list");
+        for (String command : new String[]{"delete 2", "mark 0", "unmark -1", "todo", "nonsense",
+            "deadline invalid /by 2026-02-29", "event incomplete /from 9am"}) {
+            assertTrue(mira.getResponse(command).startsWith("OOPS!!!"), command);
+            assertEquals(taskList, mira.getResponse("list"), command);
+            assertEquals(savedData, Files.readString(dataFile), command);
+        }
+    }
 }
