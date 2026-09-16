@@ -15,10 +15,11 @@
          xmlns="http://javafx.com/javafx/17"
          xmlns:fx="http://javafx.com/fxml/1">
     <children>
-        <VBox maxWidth="350.0" spacing="4.0" styleClass="bubble">
+        <VBox fx:id="bubble" minWidth="0.0" spacing="4.0" styleClass="bubble">
             <children>
                 <Label fx:id="speaker" styleClass="speaker" />
                 <Label fx:id="dialog"
+                       minWidth="0.0"
                        minHeight="-Infinity"
                        styleClass="message"
                        wrapText="true" />
