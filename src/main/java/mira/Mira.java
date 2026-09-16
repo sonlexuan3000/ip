@@ -22,7 +22,7 @@ public class Mira {
 
     private final Parser parser;
     private final Storage storage;
-    private final TaskList tasks;
+    private TaskList tasks;
     private final Ui ui;
 
     /**
@@ -152,8 +152,10 @@ public class Mira {
      * @throws MiraException If the updated task list cannot be saved.
      */
     private String addTask(Task task) throws MiraException {
-        tasks.add(task);
-        storage.save(tasks);
+        TaskList updatedTasks = new TaskList(tasks.asList());
+        updatedTasks.add(task);
+        storage.save(updatedTasks);
+        tasks = updatedTasks;
         return "Got it. I've added this task:\n  " + task
                 + "\n" + getTaskCountMessage(tasks.size());
     }
@@ -167,8 +169,15 @@ public class Mira {
      * @throws MiraException If the task number is invalid or the list cannot be saved.
      */
     private String setTaskDone(int taskNumber, boolean isDone) throws MiraException {
-        Task task = tasks.setDone(taskNumber, isDone);
-        storage.save(tasks);
+        Task task = tasks.get(taskNumber);
+        boolean wasDone = task.isDone();
+        task.setDone(isDone);
+        try {
+            storage.save(tasks);
+        } catch (MiraException exception) {
+            task.setDone(wasDone);
+            throw exception;
+        }
         String message = isDone
                 ? "Nice! I've marked this task as done:"
                 : "OK, I've marked this task as not done yet:";
@@ -183,8 +192,10 @@ public class Mira {
      * @throws MiraException If the task number is invalid or the list cannot be saved.
      */
     private String deleteTask(int taskNumber) throws MiraException {
-        Task removedTask = tasks.delete(taskNumber);
-        storage.save(tasks);
+        TaskList updatedTasks = new TaskList(tasks.asList());
+        Task removedTask = updatedTasks.delete(taskNumber);
+        storage.save(updatedTasks);
+        tasks = updatedTasks;
         return "Noted. I've removed this task:\n  " + removedTask
                 + "\n" + getTaskCountMessage(tasks.size());
     }
@@ -204,11 +215,12 @@ public class Mira {
         }
 
         StringBuilder message = new StringBuilder(header);
-        for (int i = 0; i < matchingTasks.size(); i++) {
+        List<Task> allTasks = tasks.asList();
+        for (Task task : matchingTasks) {
             message.append(System.lineSeparator())
-                    .append(i + 1)
+                    .append(allTasks.indexOf(task) + 1)
                     .append(". ")
-                    .append(matchingTasks.get(i));
+                    .append(task);
         }
         return message.toString();
     }
