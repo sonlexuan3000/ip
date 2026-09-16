@@ -11,8 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.io.TempDir;
 
 import mira.exception.MiraException;
@@ -80,5 +83,26 @@ class StorageTest {
         Storage storage = new Storage(dataFile);
 
         assertThrows(MiraException.class, storage::load);
+    }
+
+    @TestFactory
+    Stream<DynamicTest> load_corruptRecords_rejectsAndPreservesOriginal() {
+        return Stream.of(
+                "T | 2 | dGFzaw==", "X | 0 | dGFzaw==", "T | 0 | ",
+                "T | 0 | ICA=", "T | 0 | dGFzaw== | extra", "T | 0",
+                "D | 0 | dGFzaw== | MjAyNi0wMi0yOQ==",
+                "E | 0 | dGFzaw== | | ", "E | 0 | dGFzaw== | YQ== | IA==")
+                .map(record -> DynamicTest.dynamicTest(record, () -> {
+                    Path dataFile = tempDirectory.resolve("corrupt.txt");
+                    Files.writeString(dataFile, record);
+                    assertThrows(MiraException.class, new Storage(dataFile)::load);
+                    assertEquals(record, Files.readString(dataFile));
+                }));
+    }
+
+    @Test
+    void load_directoryInsteadOfFile_reportsRecoverableError() throws IOException {
+        Path dataDirectory = Files.createDirectory(tempDirectory.resolve("mira.txt"));
+        assertThrows(MiraException.class, new Storage(dataDirectory)::load);
     }
 }

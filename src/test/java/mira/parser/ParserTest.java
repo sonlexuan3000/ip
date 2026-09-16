@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
 import mira.command.Command;
 import mira.command.CommandType;
@@ -79,5 +82,38 @@ class ParserTest {
         assertThrows(MiraException.class, () -> parser.parse("event x /from a /to b /to c"));
         assertThrows(MiraException.class, () -> parser.parse("unknown command"));
         assertThrows(MiraException.class, () -> parser.parse("list extra"));
+    }
+
+    @Test
+    void parse_whitespaceAndCase_preservesDescriptionAndAcceptsCommand()
+            throws MiraException {
+        Command command = parser.parse("  ToDo\tRead  Chapter TWO  ");
+        assertEquals(CommandType.TODO, command.getType());
+        assertEquals("Read  Chapter TWO", command.getTask().getDescription());
+        assertEquals(CommandType.LIST, parser.parse("\tLIST  ").getType());
+        assertThrows(MiraException.class, () -> parser.parse(null));
+    }
+
+    @Test
+    void parse_leapDay_acceptsRealLeapDay() throws MiraException {
+        Deadline deadline = assertInstanceOf(Deadline.class,
+                parser.parse("deadline renew /by 2028-02-29").getTask());
+        assertEquals(LocalDate.of(2028, 2, 29), deadline.getBy());
+    }
+
+    @TestFactory
+    Stream<DynamicTest> parse_invalidBoundaries_rejectsWithoutCrashing() {
+        return Stream.of(
+                " ", "todo\nlist", "todo a\rb", "bye extra", "find   ",
+                "delete -1", "unmark 1.5", "mark 2147483648", "delete +1",
+                "deadline a /by 2026-04-31", "deadline a /by 2026-13-01",
+                "deadline a /by 2026-00-10", "deadline a /by 2026-9-01",
+                "deadline a /by tomorrow", "deadline /by 2026-09-18",
+                "event /from a /to b", "event a /from /to b", "event a /from b /to",
+                "event a /to b /from c", "event a /from b /from c /to d")
+                .map(input -> DynamicTest.dynamicTest(
+                        "Reject: " + input.replace('\n', ' '), () -> {
+                            assertThrows(MiraException.class, () -> parser.parse(input));
+                        }));
     }
 }
