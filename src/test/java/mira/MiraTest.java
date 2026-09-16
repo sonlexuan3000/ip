@@ -3,6 +3,8 @@ package mira;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -44,5 +46,48 @@ class MiraTest {
         Mira restoredSession = new Mira(dataFile);
 
         assertTrue(restoredSession.getResponse("list").contains("persisted task"));
+    }
+
+    @Test
+    void find_thenMarkAndDelete_usesNumbersFromFullList() throws MiraException {
+        Mira mira = new Mira(tempDirectory.resolve("mira.txt"));
+        mira.getResponse("todo buy groceries");
+        mira.getResponse("todo read book");
+        mira.getResponse("todo return book");
+
+        String results = mira.getResponse("find book");
+        assertTrue(results.contains("2. [T][ ] read book"));
+        assertTrue(results.contains("3. [T][ ] return book"));
+        assertTrue(mira.getResponse("mark 2").contains("[T][X] read book"));
+        assertTrue(mira.getResponse("delete 3").contains("return book"));
+        assertTrue(mira.getResponse("list").contains("1. [T][ ] buy groceries"));
+    }
+
+    @Test
+    void mutation_saveFailure_keepsMemoryAndRecoversAfterPathIsFixed()
+            throws MiraException, IOException {
+        Path dataFile = tempDirectory.resolve("mira.txt");
+        Mira mira = new Mira(dataFile);
+        mira.getResponse("todo original");
+        String before = mira.getResponse("list");
+        byte[] savedData = Files.readAllBytes(dataFile);
+        Files.delete(dataFile);
+        Files.createDirectory(dataFile);
+        Path blocker = Files.writeString(dataFile.resolve("blocker"), "keep me");
+
+        for (String command : new String[]{"todo new", "mark 1", "delete 1"}) {
+            assertTrue(mira.getResponse(command).contains("Nothing was changed."), command);
+            assertEquals(before, mira.getResponse("list"), command);
+            assertEquals("keep me", Files.readString(blocker));
+        }
+        try (var siblings = Files.list(tempDirectory)) {
+            assertEquals(1, siblings.count(), "Failed saves should clean up their temporary files");
+        }
+
+        Files.delete(blocker);
+        Files.delete(dataFile);
+        Files.write(dataFile, savedData);
+        assertTrue(mira.getResponse("mark 1").contains("[T][X] original"));
+        assertEquals(mira.getResponse("list"), new Mira(dataFile).getResponse("list"));
     }
 }

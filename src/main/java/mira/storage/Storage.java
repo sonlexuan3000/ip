@@ -2,8 +2,10 @@ package mira.storage;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -63,19 +65,35 @@ public class Storage {
      * @throws MiraException if the data cannot be written.
      */
     public void save(TaskList tasks) throws MiraException {
+        Path temporaryFile = null;
         try {
-            Path parent = filePath.getParent();
-            if (parent != null) {
-                Files.createDirectories(parent);
-            }
+            Path parent = filePath.toAbsolutePath().getParent();
+            Files.createDirectories(parent);
 
             List<String> lines = new ArrayList<>();
             for (Task task : tasks.asList()) {
                 lines.add(encodeTask(task));
             }
-            Files.write(filePath, lines, StandardCharsets.UTF_8);
+            // Write a sibling first so a failed write cannot truncate the existing data.
+            temporaryFile = Files.createTempFile(parent, "mira-", ".tmp");
+            Files.write(temporaryFile, lines, StandardCharsets.UTF_8);
+            try {
+                Files.move(temporaryFile, filePath,
+                        StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException exception) {
+                Files.move(temporaryFile, filePath, StandardCopyOption.REPLACE_EXISTING);
+            }
         } catch (IOException exception) {
-            throw new MiraException("I couldn't save your tasks.");
+            throw new MiraException("I couldn't save your tasks. Nothing was changed. "
+                    + "Check that the data folder is writable, then try again.");
+        } finally {
+            if (temporaryFile != null) {
+                try {
+                    Files.deleteIfExists(temporaryFile);
+                } catch (IOException exception) {
+                    // A leftover temporary file must not hide the original save result.
+                }
+            }
         }
     }
 
@@ -151,6 +169,7 @@ public class Storage {
 
         Task task;
         String description = decodeText(fields[2]);
+        requireNonBlank(description);
         switch (fields[0]) {
             case "T":
                 requireFieldCount(fields, 3);
@@ -162,7 +181,11 @@ public class Storage {
                 break;
             case "E":
                 requireFieldCount(fields, 5);
-                task = new Event(description, decodeText(fields[3]), decodeText(fields[4]));
+                String from = decodeText(fields[3]);
+                String to = decodeText(fields[4]);
+                requireNonBlank(from);
+                requireNonBlank(to);
+                task = new Event(description, from, to);
                 break;
             default:
                 throw invalidData();
@@ -237,6 +260,19 @@ public class Storage {
      * @return Exception describing invalid persisted data.
      */
     private static MiraException invalidData() {
-        return new MiraException("The data file contains an invalid task.");
+        return new MiraException("The data file contains an invalid task. "
+                + "Keep a backup of data/mira.txt and repair or move it before restarting.");
+    }
+
+    /**
+     * Rejects empty persisted fields that could not be entered through a command.
+     *
+     * @param value Decoded task field.
+     * @throws MiraException If the field contains no visible text.
+     */
+    private static void requireNonBlank(String value) throws MiraException {
+        if (value.isBlank()) {
+            throw invalidData();
+        }
     }
 }

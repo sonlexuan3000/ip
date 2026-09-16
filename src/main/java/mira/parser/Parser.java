@@ -42,11 +42,14 @@ public class Parser {
      * @throws MiraException if the input does not form a valid command.
      */
     public Command parse(String input) throws MiraException {
-        if (input.isBlank()) {
+        if (input == null || input.isBlank()) {
             throw new MiraException("Please enter a command.");
         }
+        if (input.contains("\n") || input.contains("\r")) {
+            throw new MiraException("Please enter one command on a single line.");
+        }
 
-        String[] commandParts = input.split("\\s+", 2);
+        String[] commandParts = input.strip().split("\\s+", 2);
         CommandType type = CommandType.fromWord(commandParts[0]);
         String arguments = commandParts.length == 2 ? commandParts[1].trim() : "";
 
@@ -97,7 +100,8 @@ public class Parser {
      */
     private Task parseDeadline(String arguments) throws MiraException {
         Matcher matcher = DEADLINE_PATTERN.matcher(arguments);
-        if (!hasExactlyOneMatch(BY_DELIMITER_PATTERN, arguments) || !matcher.matches()) {
+        if (!hasExactlyOneMatch(BY_DELIMITER_PATTERN, arguments) || !matcher.matches()
+                || matcher.group(1).isBlank() || matcher.group(2).isBlank()) {
             throw new MiraException(
                     "A deadline must follow: deadline DESCRIPTION /by YYYY-MM-DD.");
         }
@@ -121,7 +125,8 @@ public class Parser {
         Matcher matcher = EVENT_PATTERN.matcher(arguments);
         if (!hasExactlyOneMatch(FROM_DELIMITER_PATTERN, arguments)
                 || !hasExactlyOneMatch(TO_DELIMITER_PATTERN, arguments)
-                || !matcher.matches()) {
+                || !matcher.matches() || matcher.group(1).isBlank()
+                || matcher.group(2).isBlank() || matcher.group(3).isBlank()) {
             throw new MiraException(
                     "An event must follow: event DESCRIPTION /from START /to END.");
         }
