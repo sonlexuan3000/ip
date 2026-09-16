@@ -64,5 +64,5 @@ JAR is launched.
 
 ## Acknowledgements
 
-`sonlexuan3000` used OpenAI Codex extensively for project-wide planning,
-implementation, testing, and review.
+OpenAI Codex assisted `sonlexuan3000` with code, tests, documentation and review
+across the project.
